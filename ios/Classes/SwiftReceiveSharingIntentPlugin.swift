@@ -27,7 +27,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        os_log("register intent receiver", log: OSLog.listo, type: .info)
+        os_log("register intent receiver", log: OSLog.listo, type: .debug)
         let instance = SwiftReceiveSharingIntentPlugin()
         
         let channel = FlutterMethodChannel(name: kMessagesChannel, binaryMessenger: registrar.messenger())
@@ -44,7 +44,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         
-        os_log("handle method call", log: OSLog.listo, type: .info)
+        os_log("handle method call", log: OSLog.listo, type: .debug)
         switch call.method {
         case "getInitialMedia":
             result(toJson(data: self.initialMedia));
@@ -62,7 +62,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
-        os_log("application finder", log: OSLog.listo, type: .info)
+        os_log("application finder", log: OSLog.listo, type: .debug)
         if let url = launchOptions[UIApplication.LaunchOptionsKey.url] as? URL {
             return handleUrl(url: url, setInitialData: true)
         } else if let activityDictionary = launchOptions[UIApplication.LaunchOptionsKey.userActivityDictionary] as? [AnyHashable: Any] { //Universal link
@@ -78,20 +78,20 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        os_log("application handle url, array", log: OSLog.listo, type: .info)
+        os_log("application handle url, array", log: OSLog.listo, type: .debug)
         return handleUrl(url: url, setInitialData: false)
     }
     
     public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
-        os_log("application handle url", log: OSLog.listo, type: .info)
+        os_log("application handle url", log: OSLog.listo, type: .debug)
         return handleUrl(url: userActivity.webpageURL, setInitialData: true)
     }
     
     private func handleUrl(url: URL?, setInitialData: Bool) -> Bool {
-        os_log("do handle url", log: OSLog.listo, type: .info)
+        os_log("do handle url", log: OSLog.listo, type: .debug)
         if let url = url {
 			let appGroupId = (Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String) ?? "group.\(Bundle.main.bundleIdentifier!)"
-            os_log("appGroupId = %@", log: OSLog.listo, type: .info, appGroupId)
+            os_log("appGroupId = %@", log: OSLog.listo, type: .debug, appGroupId)
             let userDefaults = UserDefaults(suiteName: appGroupId)
             if url.fragment == "media" {
                 if let key = url.host?.components(separatedBy: "=").last,
@@ -143,7 +143,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        os_log("onListen", log: OSLog.listo, type: .info)
+        os_log("onListen", log: OSLog.listo, type: .debug)
         if (arguments as! String? == "media") {
             eventSinkMedia = events;
         } else if (arguments as! String? == "text") {
@@ -155,7 +155,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        os_log("onCancel", log: OSLog.listo, type: .info)
+        os_log("onCancel", log: OSLog.listo, type: .debug)
         if (arguments as! String? == "media") {
             eventSinkMedia = nil;
         } else if (arguments as! String? == "text") {
@@ -167,7 +167,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     private func getAbsolutePath(for identifier: String) -> String? {
-        os_log("getAbsolutePath", log: OSLog.listo, type: .info)
+        os_log("getAbsolutePath", log: OSLog.listo, type: .debug)
         if (identifier.starts(with: "file://") || identifier.starts(with: "/var/mobile/Media") || identifier.starts(with: "/private/var/mobile")) {
             return identifier.replacingOccurrences(of: "file://", with: "")
         }
@@ -180,7 +180,7 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
     }
     
     private func getFullSizeImageURLAndOrientation(for asset: PHAsset)-> (String?, Int) {
-        os_log("getFullSizeImageURLAndOrientation", log: OSLog.listo, type: .info)
+        os_log("getFullSizeImageURLAndOrientation", log: OSLog.listo, type: .debug)
            var url: String? = nil
            var orientation: Int = 0
            let semaphore = DispatchSemaphore(value: 0)
@@ -197,13 +197,13 @@ public class SwiftReceiveSharingIntentPlugin: NSObject, FlutterPlugin, FlutterSt
        }
     
     private func decode(data: Data) -> [SharedMediaFile] {
-        os_log("decode", log: OSLog.listo, type: .info)
+        os_log("decode", log: OSLog.listo, type: .debug)
         let encodedData = try? JSONDecoder().decode([SharedMediaFile].self, from: data)
         return encodedData!
     }
     
     private func toJson(data: [SharedMediaFile]?) -> String? {
-        os_log("toJson", log: OSLog.listo, type: .info)
+        os_log("toJson", log: OSLog.listo, type: .debug)
         if data == nil {
             return nil
         }
